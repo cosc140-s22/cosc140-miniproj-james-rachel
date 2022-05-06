@@ -2,4 +2,4 @@ from django.shortcuts import render
 
 def index(request):
     print("here")
-    return 
+    return render(request, 'castles/index.html')

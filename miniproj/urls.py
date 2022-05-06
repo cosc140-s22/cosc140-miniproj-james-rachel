@@ -23,6 +23,6 @@ def root_redirect(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('castlefinder/', index),
+    path('castlefinder/', index, name= "index"),
     path('', root_redirect)
 ]
