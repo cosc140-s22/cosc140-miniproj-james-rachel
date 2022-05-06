@@ -19,7 +19,7 @@ from castlefinder.views import index
 from django.shortcuts import redirect
 
 def root_redirect(request):
-    return redirect(reverse_lazy('castlefinder'))
+    return redirect(reverse_lazy('index'))
 
 urlpatterns = [
     path('admin/', admin.site.urls),
