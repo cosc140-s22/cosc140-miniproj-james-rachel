@@ -2,17 +2,16 @@ from django.shortcuts import render
 import requests
 import math
 
-
-apiKey = "AIzaSyCleZUFiK59QoeslAo84FCrxqwWMf1SOCM"
+apiKey = "AIzaSyCleZUFiK59QoeslAo84FCrxqwWMf1SOCM" #don't ever do this LOL
 
 def index(request):
     addressOne = input("Address One? ")
     response = requests.get("https://nominatim.openstreetmap.org/search?format=json&q=" + addressOne)
     if response:
         if response.status_code == 200:
-            result = response.json()
+            result = response.json() #get the long and latitude of location input
             location = str(result[0]["lat"]) + "," + str(result[0]["lon"])
-            fetchCastles(location,50000,"tourist_attraction", "castle")
+            fetchCastles(location,50000,"tourist_attraction", "castle") #call the api with these values
         else:
             print(response.status_code)
             return
@@ -29,4 +28,3 @@ def fetchCastles(location, radius, type, keyword):
     headers = {}
     response = requests.request("GET", url, headers=headers, data=payload)
     print(response.text)
-    #THIS WORKS :))) Very easy to implement 
