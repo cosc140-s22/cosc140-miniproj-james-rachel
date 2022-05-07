@@ -1,6 +1,8 @@
 from django.shortcuts import render
 import requests
+from .models import Castle, CastleImage
 import math
+import geopy.distance
 
 apiKey = "AIzaSyCleZUFiK59QoeslAo84FCrxqwWMf1SOCM" #don't ever do this LOL
 
@@ -28,13 +30,19 @@ def fetchCastles(location, radius, type, keyword):
     headers = {}
     response = requests.request("GET", url, headers=headers, data=payload)
     dict = response.json()
+    coordsLst = location.split(',')
+    coordsOriginal = (float(coordsLst[0]), float(coordsLst[1]))
     for castle in dict["results"]:
-        print(castle["name"])
-        castle["rating"]
+        coordsCastle = (castle["geometry"]["location"]["lat"], castle["geometry"]["location"]["lng"])
+        distance = round(geopy.dcardifistance.geodesic(coordsOriginal, coordsCastle).km, 2)
+        photoReference = castle["photos"][0]["photo_reference"]
+        Castle.objects.create(name = castle["name"], rating = float(castle["rating"]), distance = float(distance))
+        fetchPhoto(photoReference)
 
-def fetchPhoto():
-    url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=Aap_uEA7vb0DDYVJWEaX3O-AtYp77AaswQKSGtDaimt3gt7QCNpdjp1BkdM6acJ96xTec3tsV_ZJNL_JP-lqsVxydG3nh739RE_hepOOL05tfJh2_ranjMadb3VoBYFvF0ma6S24qZ6QJUuV6sSRrhCskSBP5C1myCzsebztMfGvm7ij3gZT&key=YOUR_API_KEY"
+        
+
+def fetchPhoto(photoReference):
+    url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + photoReference + "&key="+ apiKey
     payload={}
     headers = {}
-    response = requests.request("GET", url, headers=headers, data=payload)
-    print(response.text)
+    image = requests.request("GET", url, headers=headers, data=payload)
