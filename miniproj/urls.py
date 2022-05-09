@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include, reverse_lazy
 from castlefinder.views import index
 from django.shortcuts import redirect
+from django.conf import settings
+from django.conf.urls.static import static
 
 def root_redirect(request):
     return redirect(reverse_lazy('index'))
@@ -25,4 +27,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('castlefinder/', index, name= "index"),
     path('', root_redirect)
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
