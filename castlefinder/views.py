@@ -1,34 +1,33 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 import requests
-from .models import Castle, CastleImage
+from .models import Castle, DropDown
 import math
 import os
 from django.db.models import Prefetch
 import geopy.distance
 from django.core.files import File
-from .forms import CastleFilterForm
+from .forms import CastleFilterForm, DropDownForm
 
 apiKey = "AIzaSyCleZUFiK59QoeslAo84FCrxqwWMf1SOCM" #don't ever do this LOL
 foundCastles = []
 
 def index(request):
-    Castle.objects.prefetch_related(Prefetch('castleimage_set'))
+    model = DropDown()
+    form_class = DropDownForm()
+    template_name = 'myapp/template.html'
+    success_url = 'myapp/success.html'
+
     form = CastleFilterForm(request.GET)
     loc_search = request.GET.get('location_search')
+    if request.GET.get('history'):
+        loc_search = request.session["previousLoc"]
     if loc_search:
-    #if request.GET.get('search'):
-        
-        #if form.is_valid():
-         #   data= form.cleaned_data.get("location_search")
-          #  print(data)
-        #else:
-         #   context = {"castles": None, 'form': form}
-          #  return render(request, 'castles/index.html', context=context)
         response = requests.get("https://nominatim.openstreetmap.org/search?format=json&q=" + loc_search)
         if response:
             if response.status_code == 200:
                 result = response.json() #get the long and latitude of location input
                 location = str(result[0]["lat"]) + "," + str(result[0]["lon"])
+                request.session["previousLoc"] = loc_search
                 foundCastles = fetchCastles(location,50000,"tourist_attraction", "castle") #call the api with these values
             else:
                 print(response.status_code)
@@ -36,6 +35,20 @@ def index(request):
         else:
             print("Connection error?")
             return
+        
+        #filter the table categories
+       
+        name = request.GET.get('name')
+        if name:
+            products = Castle.objects.all().order_by('name')
+        distance = request.GET.get('distance')
+        if distance:
+            products = Castle.objects.all().order_by('distance')
+        rating = request.GET.get('rating')
+        if rating:
+            products = Castle.objects.all().order_by('rating')
+
+
         context = {"castles": foundCastles, 'form': form}
         return render(request, 'castles/index.html', context=context)
     else:
@@ -63,7 +76,10 @@ def fetchCastles(location, radius, type, keyword):
         distance = round(geopy.distance.geodesic(coordsOriginal, coordsCastle).km, 2)
         photoReference = castle["photos"][0]["photo_reference"]
         imageReference = url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + photoReference + "&key="+ apiKey
-        currentCastle = Castle.objects.create(name = castle["name"], rating = float(castle["rating"]), distance = float(distance), imageReference = imageReference)
+        if not Castle.objects.filter(name =castle["name"] ).exists():
+            currentCastle = Castle.objects.create(name = castle["name"], rating = float(castle["rating"]), distance = float(distance), imageReference = imageReference)
+        else: 
+            currentCastle = Castle.objects.filter(name =castle["name"])[0]
         foundCastles.append(currentCastle)
     return foundCastles
         
@@ -83,8 +99,8 @@ def fetchPhoto(photoReference, currentcastle):
 
 def show(request, castle_id):
     c = get_object_or_404(Castle, pk=castle_id)
-    context = { 'castle':c }
-    return render(request, 'castle/show.html', context)
+    context = { 'castle': c }
+    return render(request, 'castles/show.html', context)
 
 
 

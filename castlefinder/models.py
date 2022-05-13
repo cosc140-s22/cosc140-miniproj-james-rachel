@@ -1,5 +1,11 @@
 from django.db import models
 
+FILTER_CHOICES = (
+    ('name','NAME'),
+    ('distance', 'DISTANCE'),
+    ('rating','RATING'),
+)
+
 class Castle(models.Model):
     name = models.CharField(max_length=50, blank=False)
     rating = models.DecimalField(decimal_places=1, max_digits=2, blank=False)
@@ -11,3 +17,6 @@ class Castle(models.Model):
 class CastleImage(models.Model):
   image = models.ImageField(upload_to='castle_images/')
   castle = models.ForeignKey(Castle, on_delete=models.CASCADE)
+
+class DropDown(models.Model):
+  color = models.CharField(max_length=8, choices=FILTER_CHOICES, default='green')

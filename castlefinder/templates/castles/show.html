@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p class="top">Details for {{castle.name}}</p>
+<dl>
+    <dt>Distance (KM)</dt><dd>{{castle.distance}}</dd>
+    <dt>Rating</dt><dd>{{castle.rating}}</dd>
+
+    <p1 class='right'> <img src='{{ castle.imageReference }}' alt='{{ img.name }}' > </img>  </p1>
+
+
+</dl>
+{% endblock %}
+
+
+{% block footer %}
+<br>
+<div>
+<a class="btn btn-primary" href="{% url 'index' %}?history=true">Back to Search</a>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'base.html'%}
+{% extends "base.html"%}
 {% load static %}
 
 {% block sidebar %}
@@ -10,19 +10,27 @@
 {% endblock %}
 
 {% block content %}
-<body>
-  {% for castle in castles %}
-  <h3> {{ castle.name }}</h3>
-  <p2>Distance (KM): {{ castle.distance }}</p2>
-  <p2>Rating: {{ castle.rating }}</p2>
-  {% with url=castle.imageReference %}
-  <img src="{{ url }}">
-  {% endwith %}
+<table class="table">
+  <thead>
+    <th> Name
+    <th>Distance
+    <th>Rating
+    <th> Picture
+  </thead>
+  <tbody>
+    {% for castle in castles %}
+    <tr>
+      <td> <a href="{% url 'show' castle.id%}">{{ castle.name }}</a></h3>
+      <td>{{ castle.distance }}</p2>
+      <td>{{ castle.rating }}</p2>
+        {% with url=castle.imageReference %}
+      <td class='left'><img src="{{ url }}"></td>
+      {% endwith %}
 
-  {% endfor %}
+      {% endfor %}
 
-{% endblock %}
+      {% endblock %}
 
-</body>
+  </tbody>
 
-</html>
+  </html>
