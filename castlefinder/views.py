@@ -1,26 +1,30 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 import requests
-from .models import Castle, DropDown
+from .models import Castle
 import math
 import os
 from django.db.models import Prefetch
 import geopy.distance
 from django.core.files import File
-from .forms import CastleFilterForm, DropDownForm
+from .forms import CastleFilterForm, DropDown, ReviewForm
+from django.contrib.auth.models import User
+
 
 apiKey = "AIzaSyCleZUFiK59QoeslAo84FCrxqwWMf1SOCM" #don't ever do this LOL
 foundCastles = []
 
 def index(request):
-    model = DropDown()
-    form_class = DropDownForm()
-    template_name = 'myapp/template.html'
-    success_url = 'myapp/success.html'
+    dropDown = DropDown()
 
     form = CastleFilterForm(request.GET)
     loc_search = request.GET.get('location_search')
     if request.GET.get('history'):
         loc_search = request.session["previousLoc"]
+    if request.GET.get('filter') and request.session["previousLoc"] != None:
+        filter = request.GET.get('filter')
+        foundCastles = Castle.objects.filter(searchWord= request.session["previousLoc"]).order_by(filter)
+        context = {"castles": foundCastles, 'form': form, "dropdown": dropDown}
+        return render(request, 'castles/index.html', context=context)
     if loc_search:
         response = requests.get("https://nominatim.openstreetmap.org/search?format=json&q=" + loc_search)
         if response:
@@ -28,40 +32,26 @@ def index(request):
                 result = response.json() #get the long and latitude of location input
                 location = str(result[0]["lat"]) + "," + str(result[0]["lon"])
                 request.session["previousLoc"] = loc_search
-                foundCastles = fetchCastles(location,50000,"tourist_attraction", "castle") #call the api with these values
+                foundCastles = fetchCastles(location,50000,"tourist_attraction", "castle", loc_search) #call the api with these values
             else:
                 print(response.status_code)
                 return
         else:
             print("Connection error?")
             return
-        
-        #filter the table categories
-       
-        name = request.GET.get('name')
-        if name:
-            products = Castle.objects.all().order_by('name')
-        distance = request.GET.get('distance')
-        if distance:
-            products = Castle.objects.all().order_by('distance')
-        rating = request.GET.get('rating')
-        if rating:
-            products = Castle.objects.all().order_by('rating')
 
-
-        context = {"castles": foundCastles, 'form': form}
+        context = {"castles": foundCastles, 'form': form, "dropdown": dropDown}
         return render(request, 'castles/index.html', context=context)
     else:
-        context = {"castles": None, 'form': form}
+        #clear session key
+        request.session['previousLoc'] = None
+        context = {"castles": None, 'form': form, "dropdown": dropDown}
         return render(request, 'castles/index.html', context=context)
 
-        
-    
-    
     
 
 
-def fetchCastles(location, radius, type, keyword):
+def fetchCastles(location, radius, type, keyword, loc_search):
     #this function makes a request to the Google places api and should return relevant data about castles!
     foundCastles = []
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+ str(location) +"&radius="+ str(radius) + "&type="+ str(type) + "&keyword="+keyword+"&key=" + apiKey
@@ -75,9 +65,10 @@ def fetchCastles(location, radius, type, keyword):
         coordsCastle = (castle["geometry"]["location"]["lat"], castle["geometry"]["location"]["lng"])
         distance = round(geopy.distance.geodesic(coordsOriginal, coordsCastle).km, 2)
         photoReference = castle["photos"][0]["photo_reference"]
+        placeid = castle["place_id"]
         imageReference = url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + photoReference + "&key="+ apiKey
         if not Castle.objects.filter(name =castle["name"] ).exists():
-            currentCastle = Castle.objects.create(name = castle["name"], rating = float(castle["rating"]), distance = float(distance), imageReference = imageReference)
+            currentCastle = Castle.objects.create(name = castle["name"], rating = float(castle["rating"]), distance = float(distance), imageReference = imageReference, searchWord = loc_search, placeID=placeid)
         else: 
             currentCastle = Castle.objects.filter(name =castle["name"])[0]
         foundCastles.append(currentCastle)
@@ -99,9 +90,38 @@ def fetchPhoto(photoReference, currentcastle):
 
 def show(request, castle_id):
     c = get_object_or_404(Castle, pk=castle_id)
+    fetchReviews(c.placeID, c, request) #this runs before the render so we should see the google reviews fetched
     context = { 'castle': c }
     return render(request, 'castles/show.html', context)
+    
+
+
+def fetchReviews(placeId, c, request):
+    url = "https://maps.googleapis.com/maps/api/place/details/json?place_id=" + placeId + "&key=" + apiKey
+    payload={}
+    headers = {}
+    response = requests.request("GET", url, headers=headers, data=payload)
+    dict = response.json()
+    daddyDict = {}
+    for review in dict["result"]["reviews"]:
+        authorName = review["author_name"]
+        reviewText = review["text"]
+        reviewRating = review["rating"]
+        c.review_set.create(rating=reviewRating, review=reviewText, Author= authorName ) #create a review model and attatch it to this castle
+        
 
 
 
 
+#creating a review manually * not from google api *
+def createreview(request, castle_id):
+    c = get_object_or_404(Castle, pk=castle_id)
+    if request.method == 'POST':
+      form = ReviewForm(request.POST)
+      if form.is_valid():
+        c.review_set.create(rating=form.cleaned_data['rating'], review=form.cleaned_data['review'])
+        return redirect('show', c.id)
+    else:
+      form = ReviewForm()
+    context = { 'form':form, 'castle':c }
+    return render(request, 'castles/review.html', context)

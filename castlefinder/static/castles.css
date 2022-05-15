@@ -1,11 +1,5 @@
-.top {
-  width: 70px;
-  height: 300px;
-  border: 5px solid hwb(54 10% 24%);
-  color: hwb(50 33% 4%);
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
+.head{
+  font-size: 150%;
 }
 
 .right {

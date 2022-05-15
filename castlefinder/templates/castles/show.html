@@ -1,21 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p class="top">Details for {{castle.name}}</p>
+<p>Details for {{castle.name}}</p>
 <dl>
     <dt>Distance (KM)</dt><dd>{{castle.distance}}</dd>
     <dt>Rating</dt><dd>{{castle.rating}}</dd>
-
     <p1 class='right'> <img src='{{ castle.imageReference }}' alt='{{ img.name }}' > </img>  </p1>
-
+    <h2>Reviews</h2>
+    {% for review in castle.review_set.all %}
+        <h3>{{ review.Author }}</h3>
+        <p3>Text: {{ review.rating }}</p3>
+        <p3>Rating: {{ review.review }}</p3>
+    {% endfor %}
 
 </dl>
+  <a class="btn btn-sm btn-success" href="{% url 'createreview' castle.id %}">Write a review</a>
+</section>
 {% endblock %}
 
 
 {% block footer %}
 <br>
 <div>
-<a class="btn btn-primary" href="{% url 'index' %}?history=true">Back to Search</a>
+<a class="btn btn-primary" href="{% url 'index' %}?history=True">Back to Search</a>
 </div>
 {% endblock %}
