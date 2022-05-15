@@ -30,6 +30,9 @@ def index(request):
         if response:
             if response.status_code == 200:
                 result = response.json() #get the long and latitude of location input
+                if len(result) == 0:
+                    context = {"castles": None, 'form': form, "dropdown": dropDown} #exit because invalid location
+                    return render(request, 'castles/index.html', context=context)
                 location = str(result[0]["lat"]) + "," + str(result[0]["lon"])
                 request.session["previousLoc"] = loc_search
                 foundCastles = fetchCastles(location,50000,"tourist_attraction", "castle", loc_search) #call the api with these values
@@ -68,7 +71,10 @@ def fetchCastles(location, radius, type, keyword, loc_search):
         placeid = castle["place_id"]
         imageReference = url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + photoReference + "&key="+ apiKey
         if not Castle.objects.filter(name =castle["name"] ).exists():
-            currentCastle = Castle.objects.create(name = castle["name"], rating = float(castle["rating"]), distance = float(distance), imageReference = imageReference, searchWord = loc_search, placeID=placeid)
+            try:
+                currentCastle = Castle.objects.create(name = castle["name"], rating = float(castle["rating"]), distance = float(distance), imageReference = imageReference, searchWord = loc_search, placeID=placeid)
+            except:
+                print("An exception occurred")
         else: 
             currentCastle = Castle.objects.filter(name =castle["name"])[0]
         foundCastles.append(currentCastle)
@@ -109,8 +115,6 @@ def fetchReviews(placeId, c, request):
         reviewRating = review["rating"]
         c.review_set.create(rating=reviewRating, review=reviewText, Author= authorName ) #create a review model and attatch it to this castle
         
-
-
 
 
 #creating a review manually * not from google api *
