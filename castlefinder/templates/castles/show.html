@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>Details for {{castle.name}}</p>
+<p class="middle">Details for {{castle.name}}</p>
 <dl>
     <dt>Distance (KM)</dt><dd>{{castle.distance}}</dd>
     <dt>Rating</dt><dd>{{castle.rating}}</dd>
@@ -9,8 +9,9 @@
     <h2>Reviews</h2>
     {% for review in castle.review_set.all %}
         <h3>{{ review.Author }}</h3>
-        <p3>Text: {{ review.rating }}</p3>
-        <p3>Rating: {{ review.review }}</p3>
+        <p3>Rating: {{ review.rating }}</p3>
+        <br>
+        <p3>Review: {{ review.review }}</p3>
     {% endfor %}
 
 </dl>

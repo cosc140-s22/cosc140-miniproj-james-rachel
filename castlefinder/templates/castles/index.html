@@ -1,13 +1,13 @@
 {% extends "base.html"%}
-{% load static %}
 
 {% block sidebar %}
-<form method="get" action="{% url 'index' %}">
+<form class="search" method="get" action="{% url 'index' %}">
   {{ form }}
   <input class="btn btn-primary" type="submit" name="Filter results">
   <a href="{% url 'index' %}?search=true" class="btn btn-success">Reset Location</a>
 </form>
-<form method="get" action="{% url 'index' %}">
+
+<form class="search" method="get" action="{% url 'index' %}">
   {{ dropdown }}
   <input class="btn btn-primary" type="submit" name="Filter">
 </form>

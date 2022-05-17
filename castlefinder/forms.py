@@ -19,4 +19,4 @@ class DropDown(forms.Form):
 class ReviewForm(forms.ModelForm):
   class Meta:
     model = Review
-    fields = ['rating']
+    fields = ['rating', 'review']
