@@ -113,6 +113,8 @@ def fetchReviews(placeId, c, request):
         authorName = review["author_name"]
         reviewText = review["text"]
         reviewRating = review["rating"]
+        if c.review_set.filter(Author =authorName ).exists():
+            break
         c.review_set.create(rating=reviewRating, review=reviewText, Author= authorName ) #create a review model and attatch it to this castle
         
 
@@ -123,7 +125,7 @@ def createreview(request, castle_id):
     if request.method == 'POST':
       form = ReviewForm(request.POST)
       if form.is_valid():
-        c.review_set.create(rating=form.cleaned_data['rating'], review=form.cleaned_data['review'])
+        c.review_set.create(Author=form.cleaned_data['Author'], rating=form.cleaned_data['rating'], review=form.cleaned_data['review'])
         return redirect('show', c.id)
     else:
       form = ReviewForm()

@@ -1,19 +1,26 @@
 {% extends "base.html"%}
 
-{% block sidebar %}
-<form class="search" method="get" action="{% url 'index' %}">
-  {{ form }}
-  <input class="btn btn-primary" type="submit" name="Filter results">
-  <a href="{% url 'index' %}?search=true" class="btn btn-success">Reset Location</a>
-</form>
 
-<form class="search" method="get" action="{% url 'index' %}">
-  {{ dropdown }}
-  <input class="btn btn-primary" type="submit" name="Filter">
-</form>
+{% block sideblock %}
+
 {% endblock %}
 
 {% block content %}
+<p> <a name="top"></a></p>
+<div class="form">
+  <form method="get" action="{% url 'index' %}">
+    {{ form }}
+    <input  class="btn btn-primary" type="submit" name="Filter results">
+    <a href="{% url 'index' %}?search=true" class="btn btn-success">Reset Location</a>
+  </form>
+  
+  <form method="get" action="{% url 'index' %}">
+    {{ dropdown }}
+    <input class="btn btn-primary" type="submit" name="Filter">
+  </form>
+</div>
+
+
 <table class="table">
   <thead>
     <th> Name
@@ -32,9 +39,13 @@
       {% endwith %}
 
       {% endfor %}
-
-      {% endblock %}
-
+      
   </tbody>
+</table>
+<footer>
+  <a class = "topofpage" href="#top">Top of page</a>
+</footer> 
+{% endblock%}
+
 
   </html>
