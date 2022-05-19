@@ -8,11 +8,12 @@
     <dd>{{castle.distance}}</dd>
     <dt>Rating</dt>
     <dd>{{castle.rating}}</dd>
+    <dt>Address</dt>
+    <dd>{{address}}</dd>
     <p1 class='right'> <img src='{{ castle.imageReference }}' alt='{{ img.name }}'> </img> </p1>
     <h2 class="showname"> Reviews</h2>
-    <a class="btn btn-dark" href="{% url 'createreview' castle.id %}">Write a review</a>
-    <br>
     <div>
+      <a class="btn btn-dark" href="{% url 'createreview' castle.id %}">Write a review</a>
       <a class="btn btn-dark" href="{% url 'index' %}?history=True">Back to Search</a>
     </div>
     {% for review in castle.review_set.all %}

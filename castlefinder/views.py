@@ -79,7 +79,8 @@ def fetchCastles(location, radius, type, keyword, loc_search):
             currentCastle = Castle.objects.filter(name =castle["name"])[0]
         foundCastles.append(currentCastle)
     return foundCastles
-        
+
+#this was too slow, but leaving it here anyway         
 '''
 def fetchPhoto(photoReference, currentcastle):
     url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + photoReference + "&key="+ apiKey
@@ -96,8 +97,8 @@ def fetchPhoto(photoReference, currentcastle):
 
 def show(request, castle_id):
     c = get_object_or_404(Castle, pk=castle_id)
-    fetchReviews(c.placeID, c, request) #this runs before the render so we should see the google reviews fetched
-    context = { 'castle': c }
+    address = fetchReviews(c.placeID, c, request) #this runs before the render so we should see the google reviews fetched
+    context = { 'castle': c, 'address': address }
     return render(request, 'castles/show.html', context)
     
 
@@ -108,7 +109,7 @@ def fetchReviews(placeId, c, request):
     headers = {}
     response = requests.request("GET", url, headers=headers, data=payload)
     dict = response.json()
-    daddyDict = {}
+    address = dict["result"]["formatted_address"]
     for review in dict["result"]["reviews"]:
         authorName = review["author_name"]
         reviewText = review["text"]
@@ -116,6 +117,7 @@ def fetchReviews(placeId, c, request):
         if c.review_set.filter(Author =authorName ).exists():
             break
         c.review_set.create(rating=reviewRating, review=reviewText, Author= authorName ) #create a review model and attatch it to this castle
+    return address
         
 
 

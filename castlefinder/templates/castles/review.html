@@ -8,15 +8,15 @@
   <form action="{% url 'createreview' castle.id %}" method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Enter">
+    <input  type="submit" value="Enter">
   </form>
   </section>
-{% endblock %}
-
-{% block footer %}
   <br>
   <div>
     <a class="btn btn-sm btn-success" href="{% url 'show' castle.id %}">Back to castle</a>
     <a class="btn btn-sm btn-primary" href="{% url 'index' %}">Back to all castles</a>
   </div>
+{% endblock %}
+
+{% block footer %}
 {% endblock %}
