@@ -1,21 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="background">
   <section>
-    <p>Write a review for {{castle.name}}</p>
+    <p class="writereview">Write a review for {{castle.name}}</p>
   </section>
   
-  <form action="{% url 'createreview' castle.id %}" method="POST">
+  <form class="reviewform" action="{% url 'createreview' castle.id %}" method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <input  type="submit" value="Enter">
+    <input class="submitbutton" type="submit" value="Submit Review">
   </form>
-  </section>
+  
   <br>
   <div>
-    <a class="btn btn-sm btn-success" href="{% url 'show' castle.id %}">Back to castle</a>
-    <a class="btn btn-sm btn-primary" href="{% url 'index' %}">Back to all castles</a>
+    <a class="castlebuttons" href="{% url 'show' castle.id %}">Back to castle</a>
+    <a class="castlebuttons" href="{% url 'index' %}">Back to all castles</a>
   </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+  <p class="background">
+  </p>
+
 {% endblock %}
 
 {% block footer %}
