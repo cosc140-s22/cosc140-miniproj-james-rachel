@@ -10,13 +10,13 @@
 <div class="form">
   <form method="get" action="{% url 'index' %}">
     {{ form }}
-    <input  class="btn btn-primary" type="submit" name="Filter results">
-    <a href="{% url 'index' %}?search=true" class="btn btn-success">Reset Location</a>
+    <input  class="submitbutton" type="submit" name="Filter results">
+    <a href="{% url 'index' %}?search=true" class="btn btn-dark">Reset Location</a>
   </form>
   
   <form method="get" action="{% url 'index' %}">
     {{ dropdown }}
-    <input class="btn btn-primary" type="submit" name="Filter">
+    <input class="submitbutton" type="submit" name="Filter">
   </form>
 </div>
 
@@ -31,7 +31,7 @@
   <tbody>
     {% for castle in castles %}
     <tr>
-      <td> <a href="{% url 'show' castle.id%}">{{ castle.name }}</a></h3>
+      <td> <a class="castlebuttons" href="{% url 'show' castle.id%}">{{ castle.name }}</a></h3>
       <td>{{ castle.distance }}</p2>
       <td>{{ castle.rating }}</p2>
         {% with url=castle.imageReference %}
@@ -42,9 +42,12 @@
       
   </tbody>
 </table>
-<footer>
-  <a class = "topofpage" href="#top">Top of page</a>
-</footer> 
+{% if castles %}
+  <footer>
+    <a class = "topofpage castlebuttons" href="#top">Top of page</a>
+  </footer> 
+{% endif %}
+
 {% endblock%}
 
 

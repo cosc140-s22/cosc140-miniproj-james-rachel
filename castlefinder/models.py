@@ -32,6 +32,5 @@ class Review(models.Model):
     rating = models.IntegerField(blank=False, validators=[MinValueValidator(1), MaxValueValidator(5)])
     review = models.TextField()
     castle = models.ForeignKey(Castle, models.CASCADE)
-
     def __str__(self):
         return f"Review for {self.castle.name}"

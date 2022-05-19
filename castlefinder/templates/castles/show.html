@@ -1,28 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p class="middle">Details for {{castle.name}}</p>
-<dl>
-    <dt>Distance (KM)</dt><dd>{{castle.distance}}</dd>
-    <dt>Rating</dt><dd>{{castle.rating}}</dd>
-    <p1 class='right'> <img src='{{ castle.imageReference }}' alt='{{ img.name }}' > </img>  </p1>
-    <h2>Reviews</h2>
+<div class="showcastle">
+  <p class="showname">Details for {{castle.name}}</p>
+  <dl>
+    <dt>Distance (KM)</dt>
+    <dd>{{castle.distance}}</dd>
+    <dt>Rating</dt>
+    <dd>{{castle.rating}}</dd>
+    <p1 class='right'> <img src='{{ castle.imageReference }}' alt='{{ img.name }}'> </img> </p1>
+    <h2 class="showname"> Reviews</h2>
+    <a class="btn btn-dark" href="{% url 'createreview' castle.id %}">Write a review</a>
+    <br>
+    <div>
+      <a class="btn btn-dark" href="{% url 'index' %}?history=True">Back to Search</a>
+    </div>
     {% for review in castle.review_set.all %}
-        <h3>{{ review.Author }}</h3>
-        <p3>Rating: {{ review.rating }}</p3>
-        <br>
-        <p3>Review: {{ review.review }}</p3>
+    <br>
+    <p3><span class="bold">Author:</span> {{ review.Author }}</p3>
+    <br>
+    <p3><span class="bold">Rating:</span> {{ review.rating }}</p3>
+    <br>
+    <p3><span class="bold">Text:</span> {{ review.review }}</p3>
+    <br>
     {% endfor %}
 
-</dl>
-  <a class="btn btn-sm btn-success" href="{% url 'createreview' castle.id %}">Write a review</a>
-</section>
+  </dl>
+</div>
 {% endblock %}
 
 
 {% block footer %}
-<br>
-<div>
-<a class="btn btn-primary" href="{% url 'index' %}?history=True">Back to Search</a>
-</div>
+
 {% endblock %}
