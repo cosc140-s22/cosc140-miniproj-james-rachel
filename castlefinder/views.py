@@ -9,8 +9,7 @@ from django.core.files import File
 from .forms import CastleFilterForm, DropDown, ReviewForm
 from django.contrib.auth.models import User
 
-
-apiKey = "AIzaSyCleZUFiK59QoeslAo84FCrxqwWMf1SOCM" #don't ever do this LOL
+apiKey = input("Please enter api key: ")
 foundCastles = []
 
 def index(request):
