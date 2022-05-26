@@ -10,5 +10,7 @@ Castle Finder uses Google Places API to dynamically fetch many relevant castles.
 
 ## Feedback
 
-Once you commit and submit your work to Github, I'll update this section with feedback.
+4.0/
+
+What an awesome project!  There's really nothing to pick on in the code -- everything looks well designed and organized.  What you've done for pulling castles _and_ reviews from the google api is really impressive and fun to interact with. Excellent work!
 
